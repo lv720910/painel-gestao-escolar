@@ -4,99 +4,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Painel de Gestão Escolar</title>
+  <title>Gestão Escolar</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fa;
-      color: #243247;
+    :root {
+      font-family: system-ui, Arial, sans-serif;
+      color: #233247;
+      background: #f3f6fb;
     }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
     header {
       background: #17365d;
       color: white;
-      padding: 25px;
+      padding: 22px max(20px, calc((100% - 1100px)/2));
     }
-    header h1 { margin: 0 0 8px; }
-    main { max-width: 1100px; margin: auto; padding: 24px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-      gap: 16px;
-    }
-    .card, section {
+    header h1 { margin: 0 0 6px; }
+    main { max-width: 1100px; padding: 22px; margin: auto; }
+    .panel, .card {
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px #0000000c;
+      box-shadow: 0 2px 8px #17365d0c;
       margin-bottom: 18px;
     }
-    .number { font-size: 30px; font-weight: bold; color: #245b9e; }
-    .layout {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-      gap: 18px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
     }
-    input, select, button {
-      font: inherit;
-      padding: 11px;
-      border-radius: 6px;
-      border: 1px solid #ccd3df;
+    .number { font-size: 30px; font-weight: 700; color: #245b9e; }
+    label { display: block; font-size: 14px; margin-top: 10px; }
+    input, select, textarea, button {
       width: 100%;
-      margin: 5px 0 10px;
+      padding: 11px;
+      margin-top: 5px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font: inherit;
     }
     button {
       background: #245b9e;
       color: white;
-      cursor: pointer;
       border: 0;
+      cursor: pointer;
+      margin-top: 12px;
     }
     button:hover { background: #17365d; }
-    .task {
-      border-bottom: 1px solid #e4e8ef;
-      padding: 12px 0;
-      overflow-wrap: anywhere;
+    button.secondary { background: #64748b; }
+    button.danger { background: #a83232; }
+    button.small { width: auto; padding: 7px 10px; margin: 6px 4px 0 0; }
+    .hidden { display: none !important; }
+    .muted { color: #64748b; font-size: 14px; }
+    .item { border-top: 1px solid #e2e8f0; padding: 14px 0; }
+    .item h3 { margin: 0 0 6px; font-size: 17px; }
+    .item p { margin: 5px 0; overflow-wrap: anywhere; }
+    .tag {
+      display: inline-block; background: #e8eef8;
+      padding: 4px 8px; border-radius: 6px; font-size: 12px;
+      margin: 4px 4px 0 0;
     }
-    .task small { color: #64748b; }
-    .done { text-decoration: line-through; opacity: .6; }
-    .delete { background: #a83232; }
-    footer { text-align: center; color: #64748b; padding: 20px; }
+    .overdue { color: #b42318; font-weight: 600; }
+    .toolbar {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .toolbar button { width: auto; }
+    .message { padding: 12px; border-radius: 8px; margin: 12px 0; }
+    .error { background: #fee2e2; color: #991b1b; }
+    .success { background: #dcfce7; color: #166534; }
+    #app { display: none; }
+    footer { text-align: center; padding: 20px; color: #64748b; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Gestão Escolar</h1>
-    <div>O teu espaço pessoal de organização</div>
-  </header>
+<header>
+  <h1>Gestão Escolar</h1>
+  <div>O teu espaço pessoal de organização</div>
+</header>
 
-  <main>
-    <h2>Visão geral</h2>
-    <div class="cards">
+<main>
+  <section id="login" class="panel">
+    <h2>Iniciar sessão</h2>
+    <p class="muted">Entra com a conta que criaste no Supabase.</p>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Palavra-passe</label>
+      <input id="password" type="password"
+        autocomplete="current-password" required>
+      <button id="loginButton" type="submit">Entrar</button>
+    </form>
+    <div id="loginMessage" role="status" aria-live="polite"></div>
+  </section>
+
+  <div id="app">
+    <div class="toolbar">
+      <div>
+        <h2>O teu painel</h2>
+        <p class="muted" id="userEmail"></p>
+      </div>
+      <button id="logout" class="secondary">Terminar sessão</button>
+    </div>
+
+    <div id="appMessage" role="status" aria-live="polite"></div>
+
+    <div class="grid">
       <div class="card">
         <div>Tarefas pendentes</div>
-        <div class="number" id="pending">0</div>
+        <div class="number" id="pendingCount">0</div>
       </div>
       <div class="card">
         <div>Prazos ultrapassados</div>
-        <div class="number" id="late">0</div>
+        <div class="number" id="lateCount">0</div>
       </div>
       <div class="card">
         <div>Tarefas concluídas</div>
-        <div class="number" id="completed">0</div>
+        <div class="number" id="doneCount">0</div>
       </div>
     </div>
 
-    <div class="layout">
-      <section>
-        <h2>Nova tarefa</h2>
+    <div class="grid">
+      <section class="panel">
+        <h2 id="taskFormTitle">Nova tarefa</h2>
         <form id="taskForm">
-          <label for="title">Descrição</label>
-          <input id="title" required placeholder="Ex.: Preparar reunião">
-
-          <label for="category">Categoria</label>
-          <select id="category">
+          <input id="taskId" type="hidden">
+          <label for="taskTitle">Descrição</label>
+          <input id="taskTitle" maxlength="200" required>
+          <label for="taskDescription">Notas (opcional)</label>
+          <textarea id="taskDescription" rows="2"></textarea>
+          <label for="taskCategory">Categoria</label>
+          <select id="taskCategory">
             <option>Direção</option>
             <option>Alunos</option>
             <option>Pessoal</option>
@@ -105,123 +142,443 @@
             <option>Projetos</option>
             <option>Outros</option>
           </select>
-
-          <label for="due">Data-limite</label>
-          <input id="due" type="date" required>
-
-          <label for="priority">Prioridade</label>
-          <select id="priority">
+          <label for="taskDue">Data-limite</label>
+          <input id="taskDue" type="date">
+          <label for="taskPriority">Prioridade</label>
+          <select id="taskPriority">
             <option>Normal</option>
             <option>Alta</option>
             <option>Urgente</option>
           </select>
-
-          <button type="submit">Adicionar tarefa</button>
+          <label for="taskStatus">Estado</label>
+          <select id="taskStatus">
+            <option>Pendente</option>
+            <option>Em curso</option>
+            <option>Concluída</option>
+          </select>
+          <button id="saveTask" type="submit">Guardar tarefa</button>
+          <button id="cancelTask" class="secondary hidden"
+            type="button">Cancelar edição</button>
         </form>
       </section>
 
-      <section>
-        <h2>Lista de tarefas</h2>
-        <label for="filter">Mostrar</label>
-        <select id="filter">
-          <option value="all">Todas as tarefas</option>
-          <option value="pending">Pendentes</option>
-          <option value="done">Concluídas</option>
+      <section class="panel">
+        <h2>Tarefas</h2>
+        <label for="taskFilter">Filtrar por estado</label>
+        <select id="taskFilter">
+          <option value="Todas">Todas</option>
+          <option value="Pendente">Pendentes</option>
+          <option value="Em curso">Em curso</option>
+          <option value="Concluída">Concluídas</option>
         </select>
-        <div id="tasks"></div>
+        <div id="taskList"></div>
       </section>
     </div>
 
-    <section>
-      <h2>Próximas etapas</h2>
-      <p>Vamos acrescentar um calendário, autenticação pessoal
-      e sincronização dos dados na nuvem.</p>
-    </section>
-  </main>
+    <div class="grid">
+      <section class="panel">
+        <h2 id="eventFormTitle">Novo evento</h2>
+        <form id="eventForm">
+          <input id="eventId" type="hidden">
+          <label for="eventTitle">Título do evento</label>
+          <input id="eventTitle" maxlength="200" required>
+          <label for="eventDescription">Notas (opcional)</label>
+          <textarea id="eventDescription" rows="2"></textarea>
+          <label for="eventCategory">Categoria</label>
+          <select id="eventCategory">
+            <option>Reunião</option>
+            <option>Atividade</option>
+            <option>Conselho de turma</option>
+            <option>Prazo</option>
+            <option>Formação</option>
+            <option>Outros</option>
+          </select>
+          <label for="eventDate">Data</label>
+          <input id="eventDate" type="date" required>
+          <label for="eventTime">Hora (opcional)</label>
+          <input id="eventTime" type="time">
+          <button id="saveEvent" type="submit">Guardar evento</button>
+          <button id="cancelEvent" class="secondary hidden"
+            type="button">Cancelar edição</button>
+        </form>
+      </section>
 
-  <footer>Painel de Gestão Escolar</footer>
+      <section class="panel">
+        <h2>Calendário de eventos</h2>
+        <label for="monthFilter">Consultar mês</label>
+        <input id="monthFilter" type="month">
+        <div id="eventList"></div>
+      </section>
+    </div>
+  </div>
+</main>
 
-  <script>
-    // Protótipo: os dados ficam apenas neste navegador.
-    // Não introduzas dados reais até configurarmos a nuvem.
-    let tasks = [];
+<footer>Painel pessoal de Gestão Escolar</footer>
 
-    const form = document.getElementById("taskForm");
-    const list = document.getElementById("tasks");
-    const filter = document.getElementById("filter");
+<script type="module">
+  import { createClient } from
+    "https://esm.sh/@supabase/supabase-js@2";
 
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
+  // SUBSTITUI estes dois valores pelos do teu projeto Supabase.
+  const SUPABASE_URL = "https://fslrvgkokvshugeelivc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_WDT8ZZM2OV53Favm6jpWEQ_soTRKAsr";
 
-      tasks.push({
-        id: Date.now(),
-        title: document.getElementById("title").value.trim(),
-        category: document.getElementById("category").value,
-        due: document.getElementById("due").value,
-        priority: document.getElementById("priority").value,
-        done: false
-      });
+  const loginEl = document.getElementById("login");
+  const appEl = document.getElementById("app");
+  const loginMessage = document.getElementById("loginMessage");
+  const appMessage = document.getElementById("appMessage");
 
-      form.reset();
-      render();
-    });
+  let db;
+  let currentUser = null;
+  let tasks = [];
+  let events = [];
+  let busy = false;
 
-    filter.addEventListener("change", render);
+  function message(element, text = "", error = false) {
+    element.textContent = text;
+    element.className = text
+      ? "message " + (error ? "error" : "success") : "";
+  }
 
-    function render() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+  function setBusy(value) {
+    busy = value;
+    document.querySelectorAll("form button[type=submit]")
+      .forEach(button => button.disabled = value);
+  }
 
-      const pending = tasks.filter(t => !t.done);
-      document.getElementById("pending").textContent = pending.length;
-      document.getElementById("completed").textContent =
-        tasks.filter(t => t.done).length;
-      document.getElementById("late").textContent =
-        pending.filter(t => {
-          const date = new Date(t.due + "T00:00:00");
-          return date < today;
-        }).length;
+  function isoToday() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 10);
+  }
 
-      list.innerHTML = "";
+  function formatDate(value) {
+    if (!value) return "Sem prazo";
+    const [y, m, d] = value.split("-");
+    return `${d}/${m}/${y}`;
+  }
 
-      tasks
-        .filter(t => filter.value === "all" ||
-          (filter.value === "pending" && !t.done) ||
-          (filter.value === "done" && t.done))
-        .sort((a, b) => a.due.localeCompare(b.due))
-        .forEach(t => {
-          const item = document.createElement("div");
-          item.className = "task" + (t.done ? " done" : "");
+  function safeText(tag, text) {
+    const el = document.createElement(tag);
+    el.textContent = text || "";
+    return el;
+  }
 
-          const title = document.createElement("strong");
-          title.textContent = t.title;
+  function addButton(parent, label, action, style = "small") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.className = style;
+    button.addEventListener("click", action);
+    parent.appendChild(button);
+    return button;
+  }
 
-          const details = document.createElement("small");
-          details.textContent =
-            `${t.category} · ${t.priority} · Prazo: ${t.due}`;
+  async function loadData() {
+    message(appMessage, "A carregar os teus dados...");
+    const [taskResult, eventResult] = await Promise.all([
+      db.from("tasks").select("*").order("due_date", { ascending: true }),
+      db.from("events").select("*").order("event_date", { ascending: true })
+    ]);
 
-          const complete = document.createElement("button");
-          complete.textContent = t.done ? "Reabrir" : "Concluir";
-          complete.addEventListener("click", () => {
-            t.done = !t.done;
-            render();
-          });
-
-          const remove = document.createElement("button");
-          remove.textContent = "Eliminar";
-          remove.className = "delete";
-          remove.addEventListener("click", () => {
-            tasks = tasks.filter(x => x.id !== t.id);
-            render();
-          });
-
-          item.append(title, document.createElement("br"),
-            details, complete, remove);
-          list.appendChild(item);
-        });
+    if (taskResult.error || eventResult.error) {
+      throw taskResult.error || eventResult.error;
     }
 
+    tasks = taskResult.data;
+    events = eventResult.data;
     render();
-  </script>
+    message(appMessage);
+  }
+
+  function render() {
+    const pending = tasks.filter(t => t.status !== "Concluída");
+    document.getElementById("pendingCount").textContent = pending.length;
+    document.getElementById("doneCount").textContent =
+      tasks.filter(t => t.status === "Concluída").length;
+    document.getElementById("lateCount").textContent =
+      pending.filter(t => t.due_date && t.due_date < isoToday()).length;
+
+    const taskList = document.getElementById("taskList");
+    taskList.replaceChildren();
+
+    const filter = document.getElementById("taskFilter").value;
+    const visibleTasks = tasks.filter(t =>
+      filter === "Todas" || t.status === filter
+    );
+
+    if (!visibleTasks.length) {
+      taskList.appendChild(safeText("p", "Não existem tarefas nesta lista."));
+    }
+
+    for (const task of visibleTasks) {
+      const item = document.createElement("article");
+      item.className = "item";
+      item.appendChild(safeText("h3", task.title));
+      if (task.description) {
+        item.appendChild(safeText("p", task.description));
+      }
+
+      const details = item.appendChild(document.createElement("p"));
+      details.className = "muted";
+      details.textContent =
+        `${task.category} · ${task.priority} · ${task.status} · Prazo: ${formatDate(task.due_date)}`;
+
+      if (task.status !== "Concluída" &&
+          task.due_date && task.due_date < isoToday()) {
+        const warning = item.appendChild(safeText("p", "Prazo ultrapassado"));
+        warning.className = "overdue";
+      }
+
+      addButton(item, "Editar", () => editTask(task));
+      addButton(item, task.status === "Concluída" ? "Reabrir" : "Concluir",
+        () => changeTaskStatus(task));
+      addButton(item, "Eliminar", () => deleteTask(task), "small danger");
+      taskList.appendChild(item);
+    }
+
+    const eventList = document.getElementById("eventList");
+    eventList.replaceChildren();
+    const month = document.getElementById("monthFilter").value;
+    const visibleEvents = events.filter(e =>
+      !month || e.event_date.startsWith(month)
+    );
+
+    if (!visibleEvents.length) {
+      eventList.appendChild(safeText("p", "Não existem eventos neste mês."));
+    }
+
+    for (const event of visibleEvents) {
+      const item = document.createElement("article");
+      item.className = "item";
+      item.appendChild(safeText("h3", event.title));
+      item.appendChild(safeText("p",
+        `${formatDate(event.event_date)}${event.event_time ? " · " + event.event_time.slice(0, 5) : ""}`
+      ));
+      item.appendChild(safeText("span", event.category)).className = "tag";
+
+      if (event.description) {
+        item.appendChild(safeText("p", event.description));
+      }
+
+      addButton(item, "Editar", () => editEvent(event));
+      addButton(item, "Eliminar", () => deleteEvent(event), "small danger");
+      eventList.appendChild(item);
+    }
+  }
+
+  function editTask(task) {
+    document.getElementById("taskId").value = task.id;
+    document.getElementById("taskTitle").value = task.title;
+    document.getElementById("taskDescription").value = task.description || "";
+    document.getElementById("taskCategory").value = task.category;
+    document.getElementById("taskDue").value = task.due_date || "";
+    document.getElementById("taskPriority").value = task.priority;
+    document.getElementById("taskStatus").value = task.status;
+    document.getElementById("taskFormTitle").textContent = "Editar tarefa";
+    document.getElementById("saveTask").textContent = "Guardar alterações";
+    document.getElementById("cancelTask").classList.remove("hidden");
+    document.getElementById("taskTitle").focus();
+  }
+
+  function resetTaskForm() {
+    document.getElementById("taskForm").reset();
+    document.getElementById("taskId").value = "";
+    document.getElementById("taskFormTitle").textContent = "Nova tarefa";
+    document.getElementById("saveTask").textContent = "Guardar tarefa";
+    document.getElementById("cancelTask").classList.add("hidden");
+  }
+
+  document.getElementById("cancelTask").addEventListener("click", resetTaskForm);
+  document.getElementById("taskFilter").addEventListener("change", render);
+  document.getElementById("monthFilter").addEventListener("change", render);
+
+  document.getElementById("taskForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy || !currentUser) return;
+    setBusy(true);
+    message(appMessage);
+
+    const id = document.getElementById("taskId").value;
+    const data = {
+      title: document.getElementById("taskTitle").value.trim(),
+      description: document.getElementById("taskDescription").value.trim() || null,
+      category: document.getElementById("taskCategory").value,
+      due_date: document.getElementById("taskDue").value || null,
+      priority: document.getElementById("taskPriority").value,
+      status: document.getElementById("taskStatus").value,
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      const result = id
+        ? await db.from("tasks").update(data).eq("id", id).select().single()
+        : await db.from("tasks").insert({
+            ...data, user_id: currentUser.id
+          }).select().single();
+
+      if (result.error) throw result.error;
+      resetTaskForm();
+      await loadData();
+      message(appMessage, "Tarefa guardada.");
+    } catch (error) {
+      message(appMessage, "Não foi possível guardar a tarefa: " + error.message, true);
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  async function changeTaskStatus(task) {
+    const status = task.status === "Concluída" ? "Pendente" : "Concluída";
+    const { error } = await db.from("tasks")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", task.id);
+    if (error) return message(appMessage, error.message, true);
+    await loadData();
+  }
+
+  async function deleteTask(task) {
+    if (!confirm(`Eliminar a tarefa "${task.title}"?`)) return;
+    const { error } = await db.from("tasks").delete().eq("id", task.id);
+    if (error) return message(appMessage, error.message, true);
+    await loadData();
+  }
+
+  function editEvent(event) {
+    document.getElementById("eventId").value = event.id;
+    document.getElementById("eventTitle").value = event.title;
+    document.getElementById("eventDescription").value = event.description || "";
+    document.getElementById("eventCategory").value = event.category;
+    document.getElementById("eventDate").value = event.event_date;
+    document.getElementById("eventTime").value = event.event_time
+      ? event.event_time.slice(0, 5) : "";
+    document.getElementById("eventFormTitle").textContent = "Editar evento";
+    document.getElementById("saveEvent").textContent = "Guardar alterações";
+    document.getElementById("cancelEvent").classList.remove("hidden");
+    document.getElementById("eventTitle").focus();
+  }
+
+  function resetEventForm() {
+    document.getElementById("eventForm").reset();
+    document.getElementById("eventId").value = "";
+    document.getElementById("eventFormTitle").textContent = "Novo evento";
+    document.getElementById("saveEvent").textContent = "Guardar evento";
+    document.getElementById("cancelEvent").classList.add("hidden");
+  }
+
+  document.getElementById("cancelEvent").addEventListener("click", resetEventForm);
+
+  document.getElementById("eventForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy || !currentUser) return;
+    setBusy(true);
+    message(appMessage);
+
+    const id = document.getElementById("eventId").value;
+    const data = {
+      title: document.getElementById("eventTitle").value.trim(),
+      description: document.getElementById("eventDescription").value.trim() || null,
+      category: document.getElementById("eventCategory").value,
+      event_date: document.getElementById("eventDate").value,
+      event_time: document.getElementById("eventTime").value || null
+    };
+
+    try {
+      const result = id
+        ? await db.from("events").update(data).eq("id", id).select().single()
+        : await db.from("events").insert({
+            ...data, user_id: currentUser.id
+          }).select().single();
+
+      if (result.error) throw result.error;
+      resetEventForm();
+      await loadData();
+      message(appMessage, "Evento guardado.");
+    } catch (error) {
+      message(appMessage, "Não foi possível guardar o evento: " + error.message, true);
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  async function deleteEvent(event) {
+    if (!confirm(`Eliminar o evento "${event.title}"?`)) return;
+    const { error } = await db.from("events").delete().eq("id", event.id);
+    if (error) return message(appMessage, error.message, true);
+    await loadData();
+  }
+
+  async function showSession(session) {
+    currentUser = session?.user || null;
+    loginEl.style.display = currentUser ? "none" : "block";
+    appEl.style.display = currentUser ? "block" : "none";
+
+    if (!currentUser) {
+      tasks = [];
+      events = [];
+      document.getElementById("userEmail").textContent = "";
+      return;
+    }
+
+    document.getElementById("userEmail").textContent = currentUser.email;
+    try {
+      await loadData();
+    } catch (error) {
+      message(appMessage, "Erro ao carregar os dados: " + error.message, true);
+    }
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+
+    if (!db) {
+      return message(loginMessage,
+        "Configura primeiro o Project URL e a chave pública no código.", true);
+    }
+
+    setBusy(true);
+    message(loginMessage, "A iniciar sessão...");
+
+    try {
+      const { error } = await db.auth.signInWithPassword({
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+      });
+      if (error) throw error;
+      message(loginMessage);
+    } catch (error) {
+      message(loginMessage, "Não foi possível iniciar sessão. Confirma o email, a palavra-passe e a configuração de autenticação.", true);
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  document.getElementById("logout").addEventListener("click", async () => {
+    const { error } = await db.auth.signOut();
+    if (error) message(appMessage, error.message, true);
+  });
+
+  document.getElementById("monthFilter").value = isoToday().slice(0, 7);
+
+  if (SUPABASE_URL.startsWith("https://") &&
+      !SUPABASE_KEY.startsWith("COLOCA_AQUI")) {
+    try {
+      db = createClient(SUPABASE_URL, SUPABASE_KEY);
+      db.auth.onAuthStateChange((_event, session) => {
+        // Evita bloquear o processamento interno de autenticação.
+        setTimeout(() => showSession(session), 0);
+      });
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+      await showSession(data.session);
+    } catch (error) {
+      message(loginMessage, "Erro de configuração: " + error.message, true);
+    }
+  } else {
+    message(loginMessage,
+      "Falta configurar o Project URL e a chave pública no código.", true);
+  }
+</script>
 </body>
 </html>

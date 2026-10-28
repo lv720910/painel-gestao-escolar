@@ -1,584 +1,96 @@
-
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gestão Escolar</title>
-  <style>
-    :root {
-      font-family: system-ui, Arial, sans-serif;
-      color: #233247;
-      background: #f3f6fb;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; }
-    header {
-      background: #17365d;
-      color: white;
-      padding: 22px max(20px, calc((100% - 1100px)/2));
-    }
-    header h1 { margin: 0 0 6px; }
-    main { max-width: 1100px; padding: 22px; margin: auto; }
-    .panel, .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px #17365d0c;
-      margin-bottom: 18px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 16px;
-    }
-    .number { font-size: 30px; font-weight: 700; color: #245b9e; }
-    label { display: block; font-size: 14px; margin-top: 10px; }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 11px;
-      margin-top: 5px;
-      border: 1px solid #cbd5e1;
-      border-radius: 7px;
-      font: inherit;
-    }
-    button {
-      background: #245b9e;
-      color: white;
-      border: 0;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-    button:hover { background: #17365d; }
-    button.secondary { background: #64748b; }
-    button.danger { background: #a83232; }
-    button.small { width: auto; padding: 7px 10px; margin: 6px 4px 0 0; }
-    .hidden { display: none !important; }
-    .muted { color: #64748b; font-size: 14px; }
-    .item { border-top: 1px solid #e2e8f0; padding: 14px 0; }
-    .item h3 { margin: 0 0 6px; font-size: 17px; }
-    .item p { margin: 5px 0; overflow-wrap: anywhere; }
-    .tag {
-      display: inline-block; background: #e8eef8;
-      padding: 4px 8px; border-radius: 6px; font-size: 12px;
-      margin: 4px 4px 0 0;
-    }
-    .overdue { color: #b42318; font-weight: 600; }
-    .toolbar {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 12px; flex-wrap: wrap;
-    }
-    .toolbar button { width: auto; }
-    .message { padding: 12px; border-radius: 8px; margin: 12px 0; }
-    .error { background: #fee2e2; color: #991b1b; }
-    .success { background: #dcfce7; color: #166534; }
-    #app { display: none; }
-    footer { text-align: center; padding: 20px; color: #64748b; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Painel de Gestão Escolar</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1e293b;background:#f4f7fb;font-synthesis:none;--navy:#17365d;--blue:#245b9e;--blue-soft:#eaf2ff;--muted:#64748b;--line:#e2e8f0;--white:#fff;--green:#16794b;--green-soft:#e5f7ed;--amber:#a16207;--amber-soft:#fff5d6;--red:#b42318;--red-soft:#feeceb;--shadow:0 8px 24px rgba(23,54,93,.06)}
+*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}
+header{background:linear-gradient(115deg,#17365d,#245b9e);color:#fff;padding:24px max(20px,calc((100% - 1240px)/2));display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}header h1{margin:0;font-size:clamp(1.45rem,3vw,2rem)}header p{margin:5px 0 0;color:#dbeafe}.header-mark{font-size:13px;border:1px solid #ffffff55;border-radius:99px;padding:8px 12px}
+main{max-width:1280px;margin:auto;padding:24px 20px 44px}.panel,.card{background:var(--white);border:1px solid #e8edf4;border-radius:16px;padding:20px;box-shadow:var(--shadow);min-width:0}.panel{margin-bottom:20px}.hidden{display:none!important}.muted{color:var(--muted);font-size:.9rem}.small-muted{font-size:.8rem;color:var(--muted)}
+.login-panel{max-width:460px;margin:34px auto}.login-panel h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:18px 0}.stat{position:relative;overflow:hidden}.stat:after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;background:var(--blue-soft);right:-20px;top:-20px}.stat-label{color:var(--muted);font-size:.88rem;position:relative;z-index:1}.number{font-size:2rem;font-weight:750;color:var(--navy);margin-top:7px;position:relative;z-index:1}.stat-note{font-size:.78rem;color:var(--muted);margin-top:4px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 0 18px}.topbar h2{margin:0;font-size:1.45rem}.topbar p{margin:5px 0 0}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.workspace{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);gap:20px;align-items:start}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.section-title h2,.panel h2{font-size:1.15rem;margin:0}.section-title p{margin:5px 0 0}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.span-2{grid-column:1/-1}
+label{display:block;font-size:.86rem;font-weight:600;margin:12px 0 5px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#1e293b;min-width:0}input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid #93c5fd;outline-offset:1px}textarea{resize:vertical}button{border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:#fff;font-weight:650}button:hover{filter:brightness(.94)}button.secondary{background:#e8eef6;color:#233247}button.ghost{background:transparent;color:var(--blue);border:1px solid #cbd5e1}button.danger{background:#fff0ef;color:var(--red)}button.small{padding:7px 10px;font-size:.82rem}.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.form-actions button{width:auto}
+.filters{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin:14px 0}.filters label{margin-top:0}.task-list,.event-list{display:flex;flex-direction:column}.item{border-top:1px solid var(--line);padding:15px 0}.item:first-child{border-top:0}.item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.item h3{font-size:1rem;line-height:1.4;margin:0 0 6px;overflow-wrap:anywhere}.item p{margin:5px 0;overflow-wrap:anywhere;white-space:pre-wrap}.item-meta{font-size:.83rem;color:var(--muted);line-height:1.65}.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tag{display:inline-flex;align-items:center;border-radius:99px;padding:4px 9px;font-size:.75rem;font-weight:700;background:#edf2f7;color:#475569}.tag.high,.tag.urgent{background:var(--red-soft);color:var(--red)}.tag.medium{background:var(--amber-soft);color:var(--amber)}.tag.low,.tag.done{background:var(--green-soft);color:var(--green)}.tag.progress{background:var(--blue-soft);color:var(--blue)}.tag.overdue{background:var(--red-soft);color:var(--red)}.item-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.item-actions button{width:auto}.overdue-text{color:var(--red);font-weight:700}.due-today{color:var(--amber);font-weight:700}.empty{padding:24px 12px;text-align:center;color:var(--muted);background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}.quick-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfdff}.quick-card strong{display:block;font-size:1.35rem;color:var(--navy)}.quick-card span{font-size:.8rem;color:var(--muted)}.event-date{font-weight:750;color:var(--navy);min-width:68px}.event-row{display:flex;gap:12px;align-items:flex-start}.event-date span{display:block;font-size:.75rem;color:var(--muted);font-weight:500}.message{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:.9rem}.error{background:var(--red-soft);color:#991b1b}.success{background:var(--green-soft);color:#166534}.info{background:var(--blue-soft);color:#1d4ed8}#app{display:none}footer{text-align:center;padding:20px;color:var(--muted);font-size:.85rem}.section-anchor{scroll-margin-top:18px}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.filters label:first-child{grid-column:1/-1}}
+@media(max-width:560px){main{padding:16px 12px 30px}header{padding:20px 16px}.panel,.card{padding:15px;border-radius:13px}.grid{gap:10px}.number{font-size:1.65rem}.filters,.form-grid{grid-template-columns:1fr}.filters label:first-child,.span-2{grid-column:auto}.quick-grid{grid-template-columns:1fr 1fr}.item-head{display:block}}
+</style>
 </head>
 <body>
-<header>
-  <h1>Gestão Escolar</h1>
-  <div>O teu espaço pessoal de organização</div>
-</header>
-
+<header><div><h1>Gestão Escolar</h1><p>O teu espaço pessoal de organização e acompanhamento</p></div><span class="header-mark">PAINEL PESSOAL</span></header>
 <main>
-  <section id="login" class="panel">
-    <h2>Iniciar sessão</h2>
-    <p class="muted">Entra com a conta que criaste no Supabase.</p>
-    <form id="loginForm">
-      <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="username" required>
-      <label for="password">Palavra-passe</label>
-      <input id="password" type="password"
-        autocomplete="current-password" required>
-      <button id="loginButton" type="submit">Entrar</button>
-    </form>
-    <div id="loginMessage" role="status" aria-live="polite"></div>
-  </section>
-
-  <div id="app">
-    <div class="toolbar">
-      <div>
-        <h2>O teu painel</h2>
-        <p class="muted" id="userEmail"></p>
-      </div>
-      <button id="logout" class="secondary">Terminar sessão</button>
-    </div>
-
-    <div id="appMessage" role="status" aria-live="polite"></div>
-
-    <div class="grid">
-      <div class="card">
-        <div>Tarefas pendentes</div>
-        <div class="number" id="pendingCount">0</div>
-      </div>
-      <div class="card">
-        <div>Prazos ultrapassados</div>
-        <div class="number" id="lateCount">0</div>
-      </div>
-      <div class="card">
-        <div>Tarefas concluídas</div>
-        <div class="number" id="doneCount">0</div>
-      </div>
-    </div>
-
-    <div class="grid">
-      <section class="panel">
-        <h2 id="taskFormTitle">Nova tarefa</h2>
-        <form id="taskForm">
-          <input id="taskId" type="hidden">
-          <label for="taskTitle">Descrição</label>
-          <input id="taskTitle" maxlength="200" required>
-          <label for="taskDescription">Notas (opcional)</label>
-          <textarea id="taskDescription" rows="2"></textarea>
-          <label for="taskCategory">Categoria</label>
-          <select id="taskCategory">
-            <option>Direção</option>
-            <option>Alunos</option>
-            <option>Pessoal</option>
-            <option>Administração</option>
-            <option>Instalações</option>
-            <option>Projetos</option>
-            <option>Outros</option>
-          </select>
-          <label for="taskDue">Data-limite</label>
-          <input id="taskDue" type="date">
-          <label for="taskPriority">Prioridade</label>
-          <select id="taskPriority">
-            <option>Normal</option>
-            <option>Alta</option>
-            <option>Urgente</option>
-          </select>
-          <label for="taskStatus">Estado</label>
-          <select id="taskStatus">
-            <option>Pendente</option>
-            <option>Em curso</option>
-            <option>Concluída</option>
-          </select>
-          <button id="saveTask" type="submit">Guardar tarefa</button>
-          <button id="cancelTask" class="secondary hidden"
-            type="button">Cancelar edição</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>Tarefas</h2>
-        <label for="taskFilter">Filtrar por estado</label>
-        <select id="taskFilter">
-          <option value="Todas">Todas</option>
-          <option value="Pendente">Pendentes</option>
-          <option value="Em curso">Em curso</option>
-          <option value="Concluída">Concluídas</option>
-        </select>
-        <div id="taskList"></div>
-      </section>
-    </div>
-
-    <div class="grid">
-      <section class="panel">
-        <h2 id="eventFormTitle">Novo evento</h2>
-        <form id="eventForm">
-          <input id="eventId" type="hidden">
-          <label for="eventTitle">Título do evento</label>
-          <input id="eventTitle" maxlength="200" required>
-          <label for="eventDescription">Notas (opcional)</label>
-          <textarea id="eventDescription" rows="2"></textarea>
-          <label for="eventCategory">Categoria</label>
-          <select id="eventCategory">
-            <option>Reunião</option>
-            <option>Atividade</option>
-            <option>Conselho de turma</option>
-            <option>Prazo</option>
-            <option>Formação</option>
-            <option>Outros</option>
-          </select>
-          <label for="eventDate">Data</label>
-          <input id="eventDate" type="date" required>
-          <label for="eventTime">Hora (opcional)</label>
-          <input id="eventTime" type="time">
-          <button id="saveEvent" type="submit">Guardar evento</button>
-          <button id="cancelEvent" class="secondary hidden"
-            type="button">Cancelar edição</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>Calendário de eventos</h2>
-        <label for="monthFilter">Consultar mês</label>
-        <input id="monthFilter" type="month">
-        <div id="eventList"></div>
-      </section>
-    </div>
-  </div>
-</main>
-
-<footer>Painel pessoal de Gestão Escolar</footer>
-
+<section id="login" class="panel login-panel"><h2>Iniciar sessão</h2><p class="muted">Entra com a conta que criaste no Supabase.</p><form id="loginForm"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required><label for="password">Palavra-passe</label><input id="password" type="password" autocomplete="current-password" required><button id="loginButton" type="submit" style="width:100%;margin-top:16px">Entrar</button></form><div id="loginMessage" role="status" aria-live="polite"></div></section>
+<div id="app">
+<div class="topbar"><div><h2>Visão geral</h2><p id="welcomeText" class="muted">Aqui tens os assuntos que exigem a tua atenção.</p><p id="userEmail" class="small-muted"></p></div><div class="toolbar"><button class="ghost" id="refreshData" type="button">Atualizar dados</button><button class="secondary" id="logout" type="button">Terminar sessão</button></div></div>
+<div id="appMessage" role="status" aria-live="polite"></div>
+<div class="grid">
+<div class="card stat"><div class="stat-label">Tarefas por concluir</div><div class="number" id="pendingCount">0</div><div class="stat-note">Pendentes ou em curso</div></div>
+<div class="card stat"><div class="stat-label">Prazos ultrapassados</div><div class="number" id="lateCount">0</div><div class="stat-note">Exigem atenção</div></div>
+<div class="card stat"><div class="stat-label">Para hoje</div><div class="number" id="todayCount">0</div><div class="stat-note">Tarefas com prazo de hoje</div></div>
+<div class="card stat"><div class="stat-label">Concluídas</div><div class="number" id="doneCount">0</div><div class="stat-note">Tarefas concluídas</div></div>
+</div>
+<div class="workspace">
+<div>
+<section class="panel section-anchor" id="tasksSection"><div class="section-title"><div><h2 id="taskFormTitle">Nova tarefa</h2><p class="muted">Regista, acompanha e atualiza os assuntos a tratar.</p></div></div>
+<form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="span-2"><label for="taskTitle">Descrição da tarefa</label><input id="taskTitle" maxlength="200" required placeholder="Ex.: Preparar reunião de coordenação"></div><div class="span-2"><label for="taskDescription">Notas (opcional)</label><textarea id="taskDescription" rows="2" placeholder="Contexto, próximos passos ou notas"></textarea></div><div><label for="taskCategory">Área</label><select id="taskCategory"><option>Direção</option><option>Alunos</option><option>Pessoal</option><option>Administração</option><option>Instalações</option><option>Projetos</option><option>Reuniões</option><option>Outros</option></select></div><div><label for="taskDue">Data-limite</label><input id="taskDue" type="date"></div><div><label for="taskPriority">Prioridade</label><select id="taskPriority"><option>Normal</option><option>Alta</option><option>Urgente</option></select></div><div><label for="taskStatus">Estado</label><select id="taskStatus"><option>Pendente</option><option>Em curso</option><option>Concluída</option></select></div></div><div class="form-actions"><button id="saveTask" type="submit">Guardar tarefa</button><button id="cancelTask" class="secondary hidden" type="button">Cancelar edição</button></div></form></section>
+<section class="panel section-anchor"><div class="section-title"><div><h2>Tarefas</h2><p class="muted">Filtra e ordena para encontrar rapidamente o que importa.</p></div><span id="taskResultCount" class="tag">0 tarefas</span></div><div class="filters"><label for="taskSearch">Pesquisar<input id="taskSearch" type="search" placeholder="Procurar tarefa ou nota"></label><label for="taskFilter">Estado<select id="taskFilter"><option value="Todas">Todos os estados</option><option value="Pendente">Pendente</option><option value="Em curso">Em curso</option><option value="Concluída">Concluída</option></select></label><label for="priorityFilter">Prioridade<select id="priorityFilter"><option value="Todas">Todas</option><option value="Urgente">Urgente</option><option value="Alta">Alta</option><option value="Normal">Normal</option></select></label></div><div class="toolbar" style="margin-bottom:10px"><label style="margin:0;min-width:200px;flex:1" for="taskViewFilter">Mostrar<select id="taskViewFilter"><option value="all">Todas as tarefas</option><option value="open">Por concluir</option><option value="overdue">Atrasadas</option><option value="today">Com prazo hoje</option><option value="week">Próximos 7 dias</option></select></label><label style="margin:0;min-width:200px;flex:1" for="taskSort">Ordenar por<select id="taskSort"><option value="smart">Urgência e prazo</option><option value="due">Data-limite</option><option value="priority">Prioridade</option><option value="newest">Mais recentes</option></select></label></div><div id="taskList" class="task-list"></div></section>
+</div>
+<div>
+<section class="panel"><div class="section-title"><div><h2>Próximos passos</h2><p class="muted">Resumo dos prazos mais próximos.</p></div></div><div class="quick-grid"><div class="quick-card"><strong id="weekCount">0</strong><span>Nos próximos 7 dias</span></div><div class="quick-card"><strong id="urgentCount">0</strong><span>Prioridade urgente</span></div><div class="quick-card"><strong id="eventUpcomingCount">0</strong><span>Eventos futuros</span></div></div><div id="attentionList"></div></section>
+<section class="panel section-anchor" id="eventsSection"><div class="section-title"><div><h2 id="eventFormTitle">Novo evento</h2><p class="muted">Reuniões, atividades e datas importantes.</p></div></div><form id="eventForm"><input id="eventId" type="hidden"><label for="eventTitle">Título do evento</label><input id="eventTitle" maxlength="200" required placeholder="Ex.: Reunião de equipa"><label for="eventDescription">Notas (opcional)</label><textarea id="eventDescription" rows="2"></textarea><div class="form-grid"><div><label for="eventCategory">Categoria</label><select id="eventCategory"><option>Reunião</option><option>Atividade</option><option>Conselho de turma</option><option>Prazo</option><option>Formação</option><option>Outros</option></select></div><div><label for="eventDate">Data</label><input id="eventDate" type="date" required></div><div class="span-2"><label for="eventTime">Hora (opcional)</label><input id="eventTime" type="time"></div></div><div class="form-actions"><button id="saveEvent" type="submit">Guardar evento</button><button id="cancelEvent" class="secondary hidden" type="button">Cancelar edição</button></div></form></section>
+<section class="panel"><div class="section-title"><div><h2>Calendário de eventos</h2><p class="muted">Consulta os compromissos por mês.</p></div></div><label for="monthFilter">Mês a consultar</label><input id="monthFilter" type="month"><div id="eventList" class="event-list" style="margin-top:12px"></div></section>
+</div>
+</div>
+</div>
+</main><footer>Painel pessoal de Gestão Escolar · Os dados são guardados na tua conta.</footer>
 <script type="module">
-  import { createClient } from
-    "https://esm.sh/@supabase/supabase-js@2";
-
-  // SUBSTITUI estes dois valores pelos do teu projeto Supabase.
-  const SUPABASE_URL = "https://fslrvgkokvshugeelivc.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_WDT8ZZM2OV53Favm6jpWEQ_soTRKAsr";
-
-  const loginEl = document.getElementById("login");
-  const appEl = document.getElementById("app");
-  const loginMessage = document.getElementById("loginMessage");
-  const appMessage = document.getElementById("appMessage");
-
-  let db;
-  let currentUser = null;
-  let tasks = [];
-  let events = [];
-  let busy = false;
-
-  function message(element, text = "", error = false) {
-    element.textContent = text;
-    element.className = text
-      ? "message " + (error ? "error" : "success") : "";
-  }
-
-  function setBusy(value) {
-    busy = value;
-    document.querySelectorAll("form button[type=submit]")
-      .forEach(button => button.disabled = value);
-  }
-
-  function isoToday() {
-    const d = new Date();
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 10);
-  }
-
-  function formatDate(value) {
-    if (!value) return "Sem prazo";
-    const [y, m, d] = value.split("-");
-    return `${d}/${m}/${y}`;
-  }
-
-  function safeText(tag, text) {
-    const el = document.createElement(tag);
-    el.textContent = text || "";
-    return el;
-  }
-
-  function addButton(parent, label, action, style = "small") {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.className = style;
-    button.addEventListener("click", action);
-    parent.appendChild(button);
-    return button;
-  }
-
-  async function loadData() {
-    message(appMessage, "A carregar os teus dados...");
-    const [taskResult, eventResult] = await Promise.all([
-      db.from("tasks").select("*").order("due_date", { ascending: true }),
-      db.from("events").select("*").order("event_date", { ascending: true })
-    ]);
-
-    if (taskResult.error || eventResult.error) {
-      throw taskResult.error || eventResult.error;
-    }
-
-    tasks = taskResult.data;
-    events = eventResult.data;
-    render();
-    message(appMessage);
-  }
-
-  function render() {
-    const pending = tasks.filter(t => t.status !== "Concluída");
-    document.getElementById("pendingCount").textContent = pending.length;
-    document.getElementById("doneCount").textContent =
-      tasks.filter(t => t.status === "Concluída").length;
-    document.getElementById("lateCount").textContent =
-      pending.filter(t => t.due_date && t.due_date < isoToday()).length;
-
-    const taskList = document.getElementById("taskList");
-    taskList.replaceChildren();
-
-    const filter = document.getElementById("taskFilter").value;
-    const visibleTasks = tasks.filter(t =>
-      filter === "Todas" || t.status === filter
-    );
-
-    if (!visibleTasks.length) {
-      taskList.appendChild(safeText("p", "Não existem tarefas nesta lista."));
-    }
-
-    for (const task of visibleTasks) {
-      const item = document.createElement("article");
-      item.className = "item";
-      item.appendChild(safeText("h3", task.title));
-      if (task.description) {
-        item.appendChild(safeText("p", task.description));
-      }
-
-      const details = item.appendChild(document.createElement("p"));
-      details.className = "muted";
-      details.textContent =
-        `${task.category} · ${task.priority} · ${task.status} · Prazo: ${formatDate(task.due_date)}`;
-
-      if (task.status !== "Concluída" &&
-          task.due_date && task.due_date < isoToday()) {
-        const warning = item.appendChild(safeText("p", "Prazo ultrapassado"));
-        warning.className = "overdue";
-      }
-
-      addButton(item, "Editar", () => editTask(task));
-      addButton(item, task.status === "Concluída" ? "Reabrir" : "Concluir",
-        () => changeTaskStatus(task));
-      addButton(item, "Eliminar", () => deleteTask(task), "small danger");
-      taskList.appendChild(item);
-    }
-
-    const eventList = document.getElementById("eventList");
-    eventList.replaceChildren();
-    const month = document.getElementById("monthFilter").value;
-    const visibleEvents = events.filter(e =>
-      !month || e.event_date.startsWith(month)
-    );
-
-    if (!visibleEvents.length) {
-      eventList.appendChild(safeText("p", "Não existem eventos neste mês."));
-    }
-
-    for (const event of visibleEvents) {
-      const item = document.createElement("article");
-      item.className = "item";
-      item.appendChild(safeText("h3", event.title));
-      item.appendChild(safeText("p",
-        `${formatDate(event.event_date)}${event.event_time ? " · " + event.event_time.slice(0, 5) : ""}`
-      ));
-      item.appendChild(safeText("span", event.category)).className = "tag";
-
-      if (event.description) {
-        item.appendChild(safeText("p", event.description));
-      }
-
-      addButton(item, "Editar", () => editEvent(event));
-      addButton(item, "Eliminar", () => deleteEvent(event), "small danger");
-      eventList.appendChild(item);
-    }
-  }
-
-  function editTask(task) {
-    document.getElementById("taskId").value = task.id;
-    document.getElementById("taskTitle").value = task.title;
-    document.getElementById("taskDescription").value = task.description || "";
-    document.getElementById("taskCategory").value = task.category;
-    document.getElementById("taskDue").value = task.due_date || "";
-    document.getElementById("taskPriority").value = task.priority;
-    document.getElementById("taskStatus").value = task.status;
-    document.getElementById("taskFormTitle").textContent = "Editar tarefa";
-    document.getElementById("saveTask").textContent = "Guardar alterações";
-    document.getElementById("cancelTask").classList.remove("hidden");
-    document.getElementById("taskTitle").focus();
-  }
-
-  function resetTaskForm() {
-    document.getElementById("taskForm").reset();
-    document.getElementById("taskId").value = "";
-    document.getElementById("taskFormTitle").textContent = "Nova tarefa";
-    document.getElementById("saveTask").textContent = "Guardar tarefa";
-    document.getElementById("cancelTask").classList.add("hidden");
-  }
-
-  document.getElementById("cancelTask").addEventListener("click", resetTaskForm);
-  document.getElementById("taskFilter").addEventListener("change", render);
-  document.getElementById("monthFilter").addEventListener("change", render);
-
-  document.getElementById("taskForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    if (busy || !currentUser) return;
-    setBusy(true);
-    message(appMessage);
-
-    const id = document.getElementById("taskId").value;
-    const data = {
-      title: document.getElementById("taskTitle").value.trim(),
-      description: document.getElementById("taskDescription").value.trim() || null,
-      category: document.getElementById("taskCategory").value,
-      due_date: document.getElementById("taskDue").value || null,
-      priority: document.getElementById("taskPriority").value,
-      status: document.getElementById("taskStatus").value,
-      updated_at: new Date().toISOString()
-    };
-
-    try {
-      const result = id
-        ? await db.from("tasks").update(data).eq("id", id).select().single()
-        : await db.from("tasks").insert({
-            ...data, user_id: currentUser.id
-          }).select().single();
-
-      if (result.error) throw result.error;
-      resetTaskForm();
-      await loadData();
-      message(appMessage, "Tarefa guardada.");
-    } catch (error) {
-      message(appMessage, "Não foi possível guardar a tarefa: " + error.message, true);
-    } finally {
-      setBusy(false);
-    }
-  });
-
-  async function changeTaskStatus(task) {
-    const status = task.status === "Concluída" ? "Pendente" : "Concluída";
-    const { error } = await db.from("tasks")
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq("id", task.id);
-    if (error) return message(appMessage, error.message, true);
-    await loadData();
-  }
-
-  async function deleteTask(task) {
-    if (!confirm(`Eliminar a tarefa "${task.title}"?`)) return;
-    const { error } = await db.from("tasks").delete().eq("id", task.id);
-    if (error) return message(appMessage, error.message, true);
-    await loadData();
-  }
-
-  function editEvent(event) {
-    document.getElementById("eventId").value = event.id;
-    document.getElementById("eventTitle").value = event.title;
-    document.getElementById("eventDescription").value = event.description || "";
-    document.getElementById("eventCategory").value = event.category;
-    document.getElementById("eventDate").value = event.event_date;
-    document.getElementById("eventTime").value = event.event_time
-      ? event.event_time.slice(0, 5) : "";
-    document.getElementById("eventFormTitle").textContent = "Editar evento";
-    document.getElementById("saveEvent").textContent = "Guardar alterações";
-    document.getElementById("cancelEvent").classList.remove("hidden");
-    document.getElementById("eventTitle").focus();
-  }
-
-  function resetEventForm() {
-    document.getElementById("eventForm").reset();
-    document.getElementById("eventId").value = "";
-    document.getElementById("eventFormTitle").textContent = "Novo evento";
-    document.getElementById("saveEvent").textContent = "Guardar evento";
-    document.getElementById("cancelEvent").classList.add("hidden");
-  }
-
-  document.getElementById("cancelEvent").addEventListener("click", resetEventForm);
-
-  document.getElementById("eventForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    if (busy || !currentUser) return;
-    setBusy(true);
-    message(appMessage);
-
-    const id = document.getElementById("eventId").value;
-    const data = {
-      title: document.getElementById("eventTitle").value.trim(),
-      description: document.getElementById("eventDescription").value.trim() || null,
-      category: document.getElementById("eventCategory").value,
-      event_date: document.getElementById("eventDate").value,
-      event_time: document.getElementById("eventTime").value || null
-    };
-
-    try {
-      const result = id
-        ? await db.from("events").update(data).eq("id", id).select().single()
-        : await db.from("events").insert({
-            ...data, user_id: currentUser.id
-          }).select().single();
-
-      if (result.error) throw result.error;
-      resetEventForm();
-      await loadData();
-      message(appMessage, "Evento guardado.");
-    } catch (error) {
-      message(appMessage, "Não foi possível guardar o evento: " + error.message, true);
-    } finally {
-      setBusy(false);
-    }
-  });
-
-  async function deleteEvent(event) {
-    if (!confirm(`Eliminar o evento "${event.title}"?`)) return;
-    const { error } = await db.from("events").delete().eq("id", event.id);
-    if (error) return message(appMessage, error.message, true);
-    await loadData();
-  }
-
-  async function showSession(session) {
-    currentUser = session?.user || null;
-    loginEl.style.display = currentUser ? "none" : "block";
-    appEl.style.display = currentUser ? "block" : "none";
-
-    if (!currentUser) {
-      tasks = [];
-      events = [];
-      document.getElementById("userEmail").textContent = "";
-      return;
-    }
-
-    document.getElementById("userEmail").textContent = currentUser.email;
-    try {
-      await loadData();
-    } catch (error) {
-      message(appMessage, "Erro ao carregar os dados: " + error.message, true);
-    }
-  }
-
-  document.getElementById("loginForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    if (busy) return;
-
-    if (!db) {
-      return message(loginMessage,
-        "Configura primeiro o Project URL e a chave pública no código.", true);
-    }
-
-    setBusy(true);
-    message(loginMessage, "A iniciar sessão...");
-
-    try {
-      const { error } = await db.auth.signInWithPassword({
-        email: document.getElementById("email").value.trim(),
-        password: document.getElementById("password").value
-      });
-      if (error) throw error;
-      message(loginMessage);
-    } catch (error) {
-      message(loginMessage, "Não foi possível iniciar sessão. Confirma o email, a palavra-passe e a configuração de autenticação.", true);
-    } finally {
-      setBusy(false);
-    }
-  });
-
-  document.getElementById("logout").addEventListener("click", async () => {
-    const { error } = await db.auth.signOut();
-    if (error) message(appMessage, error.message, true);
-  });
-
-  document.getElementById("monthFilter").value = isoToday().slice(0, 7);
-
-  if (SUPABASE_URL.startsWith("https://") &&
-      !SUPABASE_KEY.startsWith("COLOCA_AQUI")) {
-    try {
-      db = createClient(SUPABASE_URL, SUPABASE_KEY);
-      db.auth.onAuthStateChange((_event, session) => {
-        // Evita bloquear o processamento interno de autenticação.
-        setTimeout(() => showSession(session), 0);
-      });
-      const { data, error } = await db.auth.getSession();
-      if (error) throw error;
-      await showSession(data.session);
-    } catch (error) {
-      message(loginMessage, "Erro de configuração: " + error.message, true);
-    }
-  } else {
-    message(loginMessage,
-      "Falta configurar o Project URL e a chave pública no código.", true);
-  }
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Mantém aqui os valores do teu projeto Supabase. Não uses a chave service_role.
+const SUPABASE_URL = "https://fslrvgkokvshugeelivc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_WDT8ZZM2OV53Favm6jpWEQ_soTRKAsr";
+const $ = id => document.getElementById(id);
+const loginEl=$('login'),appEl=$('app'),loginMessage=$('loginMessage'),appMessage=$('appMessage');
+let db=null,currentUser=null,tasks=[],events=[],busy=false;
+function message(el,text='',kind='success'){el.textContent=text;el.className=text?'message '+(kind==='error'?'error':kind==='info'?'info':'success'):''}
+function setBusy(value){busy=value;document.querySelectorAll('form button[type="submit"]').forEach(b=>b.disabled=value)}
+function isoToday(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function addDays(dateString,n){const d=new Date(dateString+'T12:00:00');d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function formatDate(v){if(!v)return 'Sem prazo';const [y,m,d]=v.split('-');return `${d}/${m}/${y}`}
+function safe(tag,text){const el=document.createElement(tag);el.textContent=text??'';return el}
+function addButton(parent,label,action,cls='small'){const b=safe('button',label);b.type='button';b.className=cls;b.addEventListener('click',action);parent.appendChild(b);return b}
+function priorityRank(p){return p==='Urgente'?0:p==='Alta'?1:2}
+function statusClass(s){return s==='Concluída'?'done':s==='Em curso'?'progress':''}
+function priorityClass(p){return p==='Urgente'?'urgent':p==='Alta'?'high':'medium'}
+function dateLabel(task){if(!task.due_date)return 'Sem prazo definido';if(task.status==='Concluída')return 'Concluída · prazo '+formatDate(task.due_date);if(task.due_date<isoToday())return 'Atrasada · '+formatDate(task.due_date);if(task.due_date===isoToday())return 'Prazo hoje';if(task.due_date<=addDays(isoToday(),7))return 'Nos próximos 7 dias · '+formatDate(task.due_date);return 'Prazo · '+formatDate(task.due_date)}
+async function loadData(){message(appMessage,'A carregar os teus dados...','info');const [tr,er]=await Promise.all([db.from('tasks').select('*').order('due_date',{ascending:true}),db.from('events').select('*').order('event_date',{ascending:true})]);if(tr.error||er.error)throw tr.error||er.error;tasks=tr.data||[];events=er.data||[];render();message(appMessage)}
+function render(){const today=isoToday(),week=addDays(today,7),open=tasks.filter(t=>t.status!=='Concluída');$('pendingCount').textContent=open.length;$('doneCount').textContent=tasks.filter(t=>t.status==='Concluída').length;$('lateCount').textContent=open.filter(t=>t.due_date&&t.due_date<today).length;$('todayCount').textContent=open.filter(t=>t.due_date===today).length;$('weekCount').textContent=open.filter(t=>t.due_date&&t.due_date>=today&&t.due_date<=week).length;$('urgentCount').textContent=open.filter(t=>t.priority==='Urgente').length;$('eventUpcomingCount').textContent=events.filter(e=>e.event_date>=today).length;
+ const q=$('taskSearch').value.trim().toLocaleLowerCase('pt-PT'),status=$('taskFilter').value,priority=$('priorityFilter').value,view=$('taskViewFilter').value,sort=$('taskSort').value;
+ let list=tasks.filter(t=>(status==='Todas'||t.status===status)&&(priority==='Todas'||t.priority===priority)&&(!q||[t.title,t.description,t.category].some(v=>(v||'').toLocaleLowerCase('pt-PT').includes(q))));
+ list=list.filter(t=>{if(view==='open')return t.status!=='Concluída';if(view==='overdue')return t.status!=='Concluída'&&t.due_date&&t.due_date<today;if(view==='today')return t.status!=='Concluída'&&t.due_date===today;if(view==='week')return t.status!=='Concluída'&&t.due_date&&t.due_date>=today&&t.due_date<=week;return true});
+ list.sort((a,b)=>{if(sort==='newest')return (b.created_at||b.updated_at||'').localeCompare(a.created_at||a.updated_at||'');if(sort==='priority')return priorityRank(a.priority)-priorityRank(b.priority)||(a.due_date||'9999').localeCompare(b.due_date||'9999');if(sort==='due')return (a.due_date||'9999').localeCompare(b.due_date||'9999');const aLate=a.status!=='Concluída'&&a.due_date&&a.due_date<today?0:1,bLate=b.status!=='Concluída'&&b.due_date&&b.due_date<today?0:1;return aLate-bLate||priorityRank(a.priority)-priorityRank(b.priority)||(a.due_date||'9999').localeCompare(b.due_date||'9999')});
+ $('taskResultCount').textContent=`${list.length} ${list.length===1?'tarefa':'tarefas'}`;const taskList=$('taskList');taskList.replaceChildren();if(!list.length)taskList.appendChild(safe('div','Não existem tarefas que correspondam a estes filtros.')).className='empty';
+ for(const t of list){const item=document.createElement('article');item.className='item';const head=document.createElement('div');head.className='item-head';head.appendChild(safe('h3',t.title));const tags=document.createElement('div');tags.className='tags';const p=safe('span',t.priority||'Normal');p.className='tag '+priorityClass(t.priority);tags.appendChild(p);const s=safe('span',t.status);s.className='tag '+statusClass(t.status);tags.appendChild(s);head.appendChild(tags);item.appendChild(head);if(t.description)item.appendChild(safe('p',t.description));item.appendChild(safe('p',`${t.category||'Sem categoria'} · ${dateLabel(t)}`)).className='item-meta';if(t.status!=='Concluída'&&t.due_date&&t.due_date<today)item.lastChild.className='item-meta overdue-text';else if(t.status!=='Concluída'&&t.due_date===today)item.lastChild.className='item-meta due-today';const actions=document.createElement('div');actions.className='item-actions';addButton(actions,'Editar',()=>editTask(t),'ghost small');addButton(actions,t.status==='Concluída'?'Reabrir':'Concluir',()=>changeTaskStatus(t),'secondary small');addButton(actions,'Eliminar',()=>deleteTask(t),'danger small');item.appendChild(actions);taskList.appendChild(item)}
+ const attention=$('attentionList');attention.replaceChildren();const att=open.filter(t=>t.due_date&&t.due_date<=week).sort((a,b)=>(a.due_date||'').localeCompare(b.due_date||'')||priorityRank(a.priority)-priorityRank(b.priority)).slice(0,5);if(!att.length)attention.appendChild(safe('div','Não tens prazos próximos registados.')).className='empty';for(const t of att){const row=document.createElement('div');row.className='item';row.appendChild(safe('h3',t.title));const line=safe('p',`${formatDate(t.due_date)} · ${t.priority||'Normal'}`);line.className=t.due_date<today?'overdue-text':t.due_date===today?'due-today':'item-meta';row.appendChild(line);addButton(row,'Ver tarefa',()=>{ $('taskSearch').value=t.title;$('taskFilter').value='Todas';$('priorityFilter').value='Todas';$('taskViewFilter').value='all';render();$('tasksSection').scrollIntoView({behavior:'smooth',block:'start'})},'ghost small');attention.appendChild(row)}
+ const month=$('monthFilter').value;const vis=events.filter(e=>!month||(e.event_date||'').startsWith(month)).sort((a,b)=>(a.event_date||'').localeCompare(b.event_date||'')||(a.event_time||'').localeCompare(b.event_time||''));const eventList=$('eventList');eventList.replaceChildren();if(!vis.length)eventList.appendChild(safe('div','Não existem eventos neste mês.')).className='empty';for(const ev of vis){const item=document.createElement('article');item.className='item';const row=document.createElement('div');row.className='event-row';const date=document.createElement('div');date.className='event-date';date.appendChild(safe('div',formatDate(ev.event_date)));if(ev.event_time)date.appendChild(safe('span',ev.event_time.slice(0,5)));row.appendChild(date);const body=document.createElement('div');body.style.flex='1';body.appendChild(safe('h3',ev.title));const cat=safe('span',ev.category||'Evento');cat.className='tag';body.appendChild(cat);if(ev.description)body.appendChild(safe('p',ev.description));row.appendChild(body);item.appendChild(row);const actions=document.createElement('div');actions.className='item-actions';addButton(actions,'Editar',()=>editEvent(ev),'ghost small');addButton(actions,'Eliminar',()=>deleteEvent(ev),'danger small');item.appendChild(actions);eventList.appendChild(item)}
+}
+function editTask(t){$('taskId').value=t.id;$('taskTitle').value=t.title;$('taskDescription').value=t.description||'';$('taskCategory').value=t.category||'Outros';$('taskDue').value=t.due_date||'';$('taskPriority').value=t.priority||'Normal';$('taskStatus').value=t.status||'Pendente';$('taskFormTitle').textContent='Editar tarefa';$('saveTask').textContent='Guardar alterações';$('cancelTask').classList.remove('hidden');$('tasksSection').scrollIntoView({behavior:'smooth',block:'start'});$('taskTitle').focus()}
+function resetTaskForm(){$('taskForm').reset();$('taskId').value='';$('taskFormTitle').textContent='Nova tarefa';$('saveTask').textContent='Guardar tarefa';$('cancelTask').classList.add('hidden')}
+function editEvent(ev){$('eventId').value=ev.id;$('eventTitle').value=ev.title;$('eventDescription').value=ev.description||'';$('eventCategory').value=ev.category||'Outros';$('eventDate').value=ev.event_date;$('eventTime').value=ev.event_time?ev.event_time.slice(0,5):'';$('eventFormTitle').textContent='Editar evento';$('saveEvent').textContent='Guardar alterações';$('cancelEvent').classList.remove('hidden');$('eventsSection').scrollIntoView({behavior:'smooth',block:'start'});$('eventTitle').focus()}
+function resetEventForm(){$('eventForm').reset();$('eventId').value='';$('eventFormTitle').textContent='Novo evento';$('saveEvent').textContent='Guardar evento';$('cancelEvent').classList.add('hidden')}
+$('cancelTask').addEventListener('click',resetTaskForm);$('cancelEvent').addEventListener('click',resetEventForm);['taskFilter','priorityFilter','taskViewFilter','taskSort','monthFilter'].forEach(id=>$(id).addEventListener('change',render));$('taskSearch').addEventListener('input',render);
+$('taskForm').addEventListener('submit',async e=>{e.preventDefault();if(busy||!currentUser)return;setBusy(true);message(appMessage);const id=$('taskId').value;const data={title:$('taskTitle').value.trim(),description:$('taskDescription').value.trim()||null,category:$('taskCategory').value,due_date:$('taskDue').value||null,priority:$('taskPriority').value,status:$('taskStatus').value,updated_at:new Date().toISOString()};try{const result=id?await db.from('tasks').update(data).eq('id',id).select().single():await db.from('tasks').insert({...data,user_id:currentUser.id}).select().single();if(result.error)throw result.error;resetTaskForm();await loadData();message(appMessage,'Tarefa guardada.')}catch(err){message(appMessage,'Não foi possível guardar a tarefa: '+err.message,'error')}finally{setBusy(false)}});
+async function changeTaskStatus(t){if(busy)return;const status=t.status==='Concluída'?'Pendente':'Concluída';const{error}=await db.from('tasks').update({status,updated_at:new Date().toISOString()}).eq('id',t.id);if(error)return message(appMessage,'Não foi possível atualizar a tarefa: '+error.message,'error');try{await loadData()}catch(err){message(appMessage,err.message,'error')}}
+async function deleteTask(t){if(busy||!confirm(`Eliminar a tarefa "${t.title}"? Esta ação não pode ser anulada.`))return;const{error}=await db.from('tasks').delete().eq('id',t.id);if(error)return message(appMessage,'Não foi possível eliminar a tarefa: '+error.message,'error');try{await loadData();message(appMessage,'Tarefa eliminada.')}catch(err){message(appMessage,err.message,'error')}}
+$('eventForm').addEventListener('submit',async e=>{e.preventDefault();if(busy||!currentUser)return;setBusy(true);message(appMessage);const id=$('eventId').value;const data={title:$('eventTitle').value.trim(),description:$('eventDescription').value.trim()||null,category:$('eventCategory').value,event_date:$('eventDate').value,event_time:$('eventTime').value||null};try{const result=id?await db.from('events').update(data).eq('id',id).select().single():await db.from('events').insert({...data,user_id:currentUser.id}).select().single();if(result.error)throw result.error;resetEventForm();await loadData();message(appMessage,'Evento guardado.')}catch(err){message(appMessage,'Não foi possível guardar o evento: '+err.message,'error')}finally{setBusy(false)}});
+async function deleteEvent(ev){if(busy||!confirm(`Eliminar o evento "${ev.title}"? Esta ação não pode ser anulada.`))return;const{error}=await db.from('events').delete().eq('id',ev.id);if(error)return message(appMessage,'Não foi possível eliminar o evento: '+error.message,'error');try{await loadData();message(appMessage,'Evento eliminado.')}catch(err){message(appMessage,err.message,'error')}}
+async function showSession(session){currentUser=session?.user||null;loginEl.style.display=currentUser?'none':'block';appEl.style.display=currentUser?'block':'none';if(!currentUser){tasks=[];events=[];$('userEmail').textContent='';return}$('userEmail').textContent=currentUser.email||'';try{await loadData()}catch(err){message(appMessage,'Erro ao carregar os dados: '+err.message,'error')}}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;if(!db)return message(loginMessage,'Configura primeiro o Project URL e a chave pública no código.','error');setBusy(true);message(loginMessage,'A iniciar sessão...','info');try{const{error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;message(loginMessage)}catch(err){message(loginMessage,'Não foi possível iniciar sessão. Confirma o email, a palavra-passe e a configuração de autenticação.','error')}finally{setBusy(false)}});
+$('logout').addEventListener('click',async()=>{if(!db)return;const{error}=await db.auth.signOut();if(error)message(appMessage,'Não foi possível terminar sessão: '+error.message,'error')});$('refreshData').addEventListener('click',async()=>{try{await loadData();message(appMessage,'Dados atualizados.')}catch(err){message(appMessage,'Não foi possível atualizar os dados: '+err.message,'error')}});
+$('monthFilter').value=isoToday().slice(0,7);
+if(SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('COLOCA_AQUI')&&!SUPABASE_KEY.includes('COLOCA_AQUI')){try{db=createClient(SUPABASE_URL,SUPABASE_KEY);db.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>showSession(session),0)});const{data,error}=await db.auth.getSession();if(error)throw error;await showSession(data.session)}catch(err){message(loginMessage,'Erro de configuração: '+err.message,'error')}}else{message(loginMessage,'Falta configurar o Project URL e a chave pública no código.','error')}
 </script>
 </body>
 </html>

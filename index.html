@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel de Gestão Escolar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      color: #243247;
+    }
+    header {
+      background: #17365d;
+      color: white;
+      padding: 25px;
+    }
+    header h1 { margin: 0 0 8px; }
+    main { max-width: 1100px; margin: auto; padding: 24px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      gap: 16px;
+    }
+    .card, section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0000000c;
+      margin-bottom: 18px;
+    }
+    .number { font-size: 30px; font-weight: bold; color: #245b9e; }
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+    input, select, button {
+      font: inherit;
+      padding: 11px;
+      border-radius: 6px;
+      border: 1px solid #ccd3df;
+      width: 100%;
+      margin: 5px 0 10px;
+    }
+    button {
+      background: #245b9e;
+      color: white;
+      cursor: pointer;
+      border: 0;
+    }
+    button:hover { background: #17365d; }
+    .task {
+      border-bottom: 1px solid #e4e8ef;
+      padding: 12px 0;
+      overflow-wrap: anywhere;
+    }
+    .task small { color: #64748b; }
+    .done { text-decoration: line-through; opacity: .6; }
+    .delete { background: #a83232; }
+    footer { text-align: center; color: #64748b; padding: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gestão Escolar</h1>
+    <div>O teu espaço pessoal de organização</div>
+  </header>
+
+  <main>
+    <h2>Visão geral</h2>
+    <div class="cards">
+      <div class="card">
+        <div>Tarefas pendentes</div>
+        <div class="number" id="pending">0</div>
+      </div>
+      <div class="card">
+        <div>Prazos ultrapassados</div>
+        <div class="number" id="late">0</div>
+      </div>
+      <div class="card">
+        <div>Tarefas concluídas</div>
+        <div class="number" id="completed">0</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section>
+        <h2>Nova tarefa</h2>
+        <form id="taskForm">
+          <label for="title">Descrição</label>
+          <input id="title" required placeholder="Ex.: Preparar reunião">
+
+          <label for="category">Categoria</label>
+          <select id="category">
+            <option>Direção</option>
+            <option>Alunos</option>
+            <option>Pessoal</option>
+            <option>Administração</option>
+            <option>Instalações</option>
+            <option>Projetos</option>
+            <option>Outros</option>
+          </select>
+
+          <label for="due">Data-limite</label>
+          <input id="due" type="date" required>
+
+          <label for="priority">Prioridade</label>
+          <select id="priority">
+            <option>Normal</option>
+            <option>Alta</option>
+            <option>Urgente</option>
+          </select>
+
+          <button type="submit">Adicionar tarefa</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Lista de tarefas</h2>
+        <label for="filter">Mostrar</label>
+        <select id="filter">
+          <option value="all">Todas as tarefas</option>
+          <option value="pending">Pendentes</option>
+          <option value="done">Concluídas</option>
+        </select>
+        <div id="tasks"></div>
+      </section>
+    </div>
+
+    <section>
+      <h2>Próximas etapas</h2>
+      <p>Vamos acrescentar um calendário, autenticação pessoal
+      e sincronização dos dados na nuvem.</p>
+    </section>
+  </main>
+
+  <footer>Painel de Gestão Escolar</footer>
+
+  <script>
+    // Protótipo: os dados ficam apenas neste navegador.
+    // Não introduzas dados reais até configurarmos a nuvem.
+    let tasks = [];
+
+    const form = document.getElementById("taskForm");
+    const list = document.getElementById("tasks");
+    const filter = document.getElementById("filter");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      tasks.push({
+        id: Date.now(),
+        title: document.getElementById("title").value.trim(),
+        category: document.getElementById("category").value,
+        due: document.getElementById("due").value,
+        priority: document.getElementById("priority").value,
+        done: false
+      });
+
+      form.reset();
+      render();
+    });
+
+    filter.addEventListener("change", render);
+
+    function render() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const pending = tasks.filter(t => !t.done);
+      document.getElementById("pending").textContent = pending.length;
+      document.getElementById("completed").textContent =
+        tasks.filter(t => t.done).length;
+      document.getElementById("late").textContent =
+        pending.filter(t => {
+          const date = new Date(t.due + "T00:00:00");
+          return date < today;
+        }).length;
+
+      list.innerHTML = "";
+
+      tasks
+        .filter(t => filter.value === "all" ||
+          (filter.value === "pending" && !t.done) ||
+          (filter.value === "done" && t.done))
+        .sort((a, b) => a.due.localeCompare(b.due))
+        .forEach(t => {
+          const item = document.createElement("div");
+          item.className = "task" + (t.done ? " done" : "");
+
+          const title = document.createElement("strong");
+          title.textContent = t.title;
+
+          const details = document.createElement("small");
+          details.textContent =
+            `${t.category} · ${t.priority} · Prazo: ${t.due}`;
+
+          const complete = document.createElement("button");
+          complete.textContent = t.done ? "Reabrir" : "Concluir";
+          complete.addEventListener("click", () => {
+            t.done = !t.done;
+            render();
+          });
+
+          const remove = document.createElement("button");
+          remove.textContent = "Eliminar";
+          remove.className = "delete";
+          remove.addEventListener("click", () => {
+            tasks = tasks.filter(x => x.id !== t.id);
+            render();
+          });
+
+          item.append(title, document.createElement("br"),
+            details, complete, remove);
+          list.appendChild(item);
+        });
+    }
+
+    render();
+  </script>
+</body>
+</html>
